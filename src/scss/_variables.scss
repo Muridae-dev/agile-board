@@ -13,23 +13,16 @@ $primary-background-color: linear-gradient(
 //     rgba(148, 187, 233, 1) 100%
 //   );
 
-// $primary-background-color: linear-gradient(
-//   90deg,
-//   rgba(2, 0, 36, 1) 0%,
-//   rgba(9, 9, 121, 1) 35%,
-//   rgba(0, 212, 255, 1) 100%
-// );
+$primary-background-color: linear-gradient(to right, #093028, #237a57);
+$secondary-background-color: linear-gradient(to left, #34e89e, #0f3443);
 
-$primary-background-color: linear-gradient(
-  90deg,
-  rgba(0, 0, 0, 1) 0%,
-  rgba(0, 255, 147, 1) 100%
-);
+$primary-text-color: rgb(0, 255, 179);
 
-$primary-background-color: linear-gradient(
-  90deg,
-  rgba(0, 0, 0, 1) 0%,
-  rgba(5, 186, 109, 1) 100%
-);
+$primary-scroll-bar-color: rgb(0, 255, 179);
 
-$primary-scroll-bar-color: rgb(0, 221, 255);
+$header-height: 50px;
+
+$primary-font: "video", serif;
+
+// STREET THEME ______
+// $primary-font: "owners-wide", sans-serif;

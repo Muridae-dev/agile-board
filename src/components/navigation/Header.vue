@@ -26,8 +26,9 @@ nav {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1000;
 
-  height: 100px;
+  height: $header-height;
   width: 100%;
 
   display: flex;

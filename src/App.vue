@@ -45,7 +45,7 @@ body {
 
 #app {
   width: 100%;
-  height: 100dvh;
+  height: 100%;
 }
 
 a {
@@ -59,7 +59,9 @@ a {
 
 html,
 body {
+  height: 100dvh;
   overflow: auto;
+  // overflow-x: hidden;
 }
 
 body::-webkit-scrollbar-track {
