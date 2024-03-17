@@ -1,29 +1,51 @@
 <template>
-  <header>
-    <div class="wrapper">
-      <nav></nav>
-    </div>
-  </header>
+  <Header />
 
   <Grain />
   <AnimatedCursor />
-
-  <RouterView />
+  <main>
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
 import Grain from "@/components/Grain.vue";
 import AnimatedCursor from "@/components/AnimatedCursor.vue";
+import Header from "./components/navigation/Header.vue";
 </script>
 
 <style lang="scss">
+/* ------------- TRANSITIONS ------------- */
+.fade-enter-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from {
+  opacity: 0;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ------------- GENERAL STYLING ------------- */
 body {
   cursor: none;
 
   @media (max-width: 768px) {
     cursor: unset;
   }
+}
+
+#app {
+  width: 100%;
+  height: 100dvh;
 }
 
 a {
@@ -38,8 +60,6 @@ a {
 html,
 body {
   overflow: auto;
-  width: 100%;
-  min-height: 100dvh;
 }
 
 body::-webkit-scrollbar-track {
@@ -52,7 +72,7 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-thumb {
-  background-color: rgb(138, 4, 255);
-  border: 2px solid rgb(138, 4, 255);
+  background-color: $primary-scroll-bar-color;
+  border: 2px solid $primary-scroll-bar-color;
 }
 </style>

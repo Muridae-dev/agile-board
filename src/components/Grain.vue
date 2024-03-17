@@ -22,7 +22,8 @@
   position: fixed;
 
   background: rgb(224, 15, 196);
-  background: $primary-background-color;
+  // background: $primary-background-color;
+  background: rgb(166, 210, 192);
 
   opacity: 1;
   filter: contrast(120%);
