@@ -1,6 +1,6 @@
 <template>
   <div class="board-container">
-    <ul v-if="!addingTask" v-for="column in columns" class="board-column">
+    <ul v-for="column in columns.value" class="board-column">
       {{
         column.title
       }}
@@ -9,72 +9,22 @@
         <span class="board-task--description">{{ item.description }}</span>
       </li>
     </ul>
-    <div class="board-edit-container" v-if="addingTask">
-      <label for="title">Title</label><input id="title" />
-      <label for="description">Description</label><input id="description" />
-      <label for="column">Column</label><input id="column" />
-      <button @click="addTask">SUBMIT</button>
-    </div>
-    <button class="board-button--add-column" @click="() => (addingTask = true)">
-      +
-    </button>
+    <router-link to="/board/edit" class="board-button--add-column"
+      >+</router-link
+    >
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
+<script setup lang="ts">
+import { onMounted } from "vue";
 
-const columns = ref([]);
-const addingTask = ref(false);
+import { useBoardStore } from "@/stores/BoardStore";
 
-const groupByColumn = (data) => {
-  // Create an object to hold groups
-  const groups = {};
+const { columns, fetchAndFormatTasks } = useBoardStore();
 
-  // Iterate over each item
-  data.forEach((item) => {
-    // If the group doesn't exist, create it
-    if (!groups[item.column]) {
-      groups[item.column] = [];
-    }
-
-    // Push the current item, minus the column property, into the group
-    groups[item.column].push({
-      title: item.title,
-      description: item.description,
-    });
-  });
-
-  // Transform groups object into the desired array format
-  columns.value = Object.keys(groups).map((columnName) => ({
-    title: columnName,
-    items: groups[columnName],
-  }));
-};
-
-onMounted(() => {
-  fetch("http://localhost:3000/api/taskList")
-    .then((res) => res.json())
-    .then((data) => console.log(groupByColumn(data)));
+onMounted(async () => {
+  if (!columns.value) columns.value = await fetchAndFormatTasks();
 });
-
-const addTask = async (e) => {
-  e.preventDefault();
-  const bodyText = JSON.stringify({
-    title: document.getElementById("title").value,
-    description: document.getElementById("description").value,
-    column: document.getElementById("column").value,
-  });
-  await fetch("http://localhost:3000/api/taskList", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: bodyText,
-  });
-
-  addingTask.value = false;
-};
 </script>
 
 <style lang="scss">
@@ -146,137 +96,14 @@ const addTask = async (e) => {
 
 .board-button--add-column {
   width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   background: transparent;
   border: 2px solid $primary-scroll-bar-color;
   border-radius: 10px;
   color: $primary-scroll-bar-color;
-}
-
-.board-edit-container {
-  display: flex;
-  flex-direction: column;
-  width: 400px;
-
-  input {
-    height: 20px;
-    margin-bottom: 20px;
-  }
+  text-decoration: none;
 }
 </style>
-
-<!-- const columns = [
-  {
-    title: "Column 1",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 2",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 3",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 4",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 5",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-]; -->
