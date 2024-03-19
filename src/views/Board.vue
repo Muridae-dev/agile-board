@@ -1,9 +1,7 @@
 <template>
   <div class="board-container">
     <ul v-for="column in columns.value" class="board-column">
-      {{
-        column.title
-      }}
+      <span class="board-column--title"> {{ column.title }}</span>
       <li
         v-for="item in column.items"
         class="board-task"
@@ -11,7 +9,15 @@
       >
         <span class="board-task--title">{{ item.title }}</span>
         <span class="board-task--description">{{ item.description }}</span>
-        <button class="board-task--remove" @click="() => removeTask(item._id)">
+        <button
+          class="board-task--remove"
+          @click="
+            (e) => {
+              e.stopPropagation();
+              removeTaskAndFormatColumns(item._id);
+            }
+          "
+        >
           X
         </button>
       </li>
@@ -32,6 +38,23 @@ const { columns, fetchAndFormatTasks, removeTask } = useBoardStore();
 
 const editTask = (_id: string) => {
   router.push(`/board/edit?id=${_id}`);
+};
+
+const removeTaskAndFormatColumns = async (_id: string) => {
+  await removeTask(_id);
+  for (let i = 0; i < columns.value.length; i++) {
+    const itemIndex = columns.value[i].items.findIndex(
+      (item) => item._id === _id
+    );
+
+    if (itemIndex !== -1) {
+      columns.value[i].items.splice(itemIndex, 1);
+      if (columns.value[i].items.length === 0) {
+        columns.value.splice(i, 1);
+      }
+      break;
+    }
+  }
 };
 
 onMounted(async () => {
@@ -64,6 +87,11 @@ onMounted(async () => {
   overflow: auto;
 
   border-right: 2px solid $primary-scroll-bar-color;
+
+  &--title {
+    display: block;
+    height: 1.5rem;
+  }
 
   &:last-of-type {
     border-right: none;
@@ -114,14 +142,17 @@ onMounted(async () => {
     font-size: 1.2rem;
     background: transparent;
     border: none;
+    cursor: pointer;
   }
 }
 
 .board-button--add-column {
   width: 150px;
+  height: calc(100% - (1.5rem + 14px));
   display: flex;
   justify-content: center;
   align-items: center;
+  align-self: flex-end;
 
   background: transparent;
   border: 2px solid $primary-scroll-bar-color;

@@ -14,8 +14,8 @@ export const useBoardStore = defineStore("board", () => {
     return data;
   };
 
-  const removeTask = (_id: string) => {
-    fetch("http://localhost:3000/api/taskList/" + _id, {
+  const removeTask = async (_id: string) => {
+    await fetch("http://localhost:3000/api/taskList/" + _id, {
       method: "DELETE",
     });
   };
