@@ -4,17 +4,72 @@ import { ref } from "vue";
 export const useBoardStore = defineStore("board", () => {
   const columns = ref<any>([]);
 
-  const fetchAndFormatTasks = () => {
-    console.log("ran");
-    return fetch("http://localhost:3000/api/taskList")
+  const fetchAndFormatTasks = async () => {
+    console.log("ran fetchAndFormatTasks");
+    const data = await fetch("http://localhost:3000/api/taskList")
       .then((res) => res.json())
       .then((data) => groupByColumn(data));
+
+    columns.value = data;
+    return data;
   };
 
-  return { columns, fetchAndFormatTasks };
+  const removeTask = (_id: string) => {
+    fetch("http://localhost:3000/api/taskList/" + _id, {
+      method: "DELETE",
+    });
+  };
+
+  const addTask = async (body: string) => {
+    await fetch("http://localhost:3000/api/taskList", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    });
+  };
+
+  const editTask = (_id: string, body: any) => {
+    fetch("http://localhost:3000/api/taskList/" + _id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    });
+  };
+
+  const getTaskById = async (_id: string) => {
+    if (!columns.value[0]) {
+      await fetchAndFormatTasks();
+    }
+    for (let group of columns.value) {
+      const item = group.items.find((item: any) => item._id === _id);
+
+      if (item) {
+        return {
+          ...item,
+          column: group.title,
+        };
+      }
+    }
+
+    return null;
+  };
+
+  return {
+    columns,
+    fetchAndFormatTasks,
+    removeTask,
+    editTask,
+    addTask,
+    getTaskById,
+  };
 });
 
 const groupByColumn = (data: any) => {
+  console.log(data);
   // Create an object to hold groups
   const groups: any = {};
 
@@ -29,6 +84,7 @@ const groupByColumn = (data: any) => {
     groups[item.column].push({
       title: item.title,
       description: item.description,
+      _id: item._id,
     });
   });
 

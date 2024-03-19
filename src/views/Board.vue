@@ -4,9 +4,16 @@
       {{
         column.title
       }}
-      <li v-for="item in column.items" class="board-task">
+      <li
+        v-for="item in column.items"
+        class="board-task"
+        @click="() => editTask(item._id)"
+      >
         <span class="board-task--title">{{ item.title }}</span>
         <span class="board-task--description">{{ item.description }}</span>
+        <button class="board-task--remove" @click="() => removeTask(item._id)">
+          X
+        </button>
       </li>
     </ul>
     <router-link to="/board/edit" class="board-button--add-column"
@@ -19,11 +26,16 @@
 import { onMounted } from "vue";
 
 import { useBoardStore } from "@/stores/BoardStore";
+import router from "@/router";
 
-const { columns, fetchAndFormatTasks } = useBoardStore();
+const { columns, fetchAndFormatTasks, removeTask } = useBoardStore();
+
+const editTask = (_id: string) => {
+  router.push(`/board/edit?id=${_id}`);
+};
 
 onMounted(async () => {
-  if (!columns.value) columns.value = await fetchAndFormatTasks();
+  columns.value = await fetchAndFormatTasks();
 });
 </script>
 
@@ -73,6 +85,7 @@ onMounted(async () => {
 }
 
 .board-task {
+  position: relative;
   list-style-type: none;
   height: 100px;
   width: calc(100% - 20px);
@@ -90,7 +103,17 @@ onMounted(async () => {
     font-weight: bold;
   }
 
-  &--description {
+  &--remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    color: rgb(0, 255, 179);
+    mix-blend-mode: difference;
+    font-family: $primary-font;
+    font-size: 1.2rem;
+    background: transparent;
+    border: none;
   }
 }
 

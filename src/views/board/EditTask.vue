@@ -1,38 +1,46 @@
 <template>
   <div class="board-edit-container">
-    <label for="title">Title</label><input id="title" />
-    <label for="description">Description</label><input id="description" />
-    <label for="column">Column</label><input id="column" />
-    <button @click="addTask">SUBMIT</button>
+    <label for="title">Title</label><input id="title" ref="titleRef" />
+    <label for="description">Description</label
+    ><input id="description" ref="descriptionRef" />
+    <label for="column">Column</label><input id="column" ref="columnRef" />
+    <button @click="formatAndAddTask">SUBMIT</button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
+import router from "@/router";
 import { useBoardStore } from "@/stores/BoardStore";
-import { onMounted } from "vue";
 
-const { columns, fetchAndFormatTasks } = useBoardStore();
+const { addTask, editTask, getTaskById } = useBoardStore();
+const _id: any = router.currentRoute.value.query.id;
 
-onMounted(() => {
-  if (!columns.value) {
-    fetchAndFormatTasks();
+// Define refs
+const titleRef = ref<HTMLInputElement | null>(null);
+const descriptionRef = ref<HTMLInputElement | null>(null);
+const columnRef = ref<HTMLInputElement | null>(null);
+
+onMounted(async () => {
+  if (_id) {
+    const item = await getTaskById(_id);
+    if (titleRef.value) titleRef.value.value = item.title;
+    if (descriptionRef.value) descriptionRef.value.value = item.description;
+    if (columnRef.value) columnRef.value.value = item.column;
   }
 });
 
-const addTask = async (e) => {
-  e.preventDefault();
+const formatAndAddTask = async () => {
   const bodyText = JSON.stringify({
-    title: document.getElementById("title").value,
-    description: document.getElementById("description").value,
-    column: document.getElementById("column").value,
+    title: titleRef.value?.value,
+    description: descriptionRef.value?.value,
+    column: columnRef.value?.value,
   });
-  await fetch("http://localhost:3000/api/taskList", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: bodyText,
-  });
+
+  if (!_id) await addTask(bodyText);
+  else await editTask(_id, bodyText);
+
+  router.push("/board");
 };
 </script>
 
