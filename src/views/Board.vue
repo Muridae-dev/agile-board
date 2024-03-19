@@ -1,133 +1,42 @@
 <template>
   <div class="board-container">
-    <ul v-for="column in columns" class="board-column">
+    <ul v-for="column in columns.value" class="board-column">
       {{
         column.title
       }}
-      <li v-for="item in column.items" class="board-task">
+      <li
+        v-for="item in column.items"
+        class="board-task"
+        @click="() => editTask(item._id)"
+      >
         <span class="board-task--title">{{ item.title }}</span>
         <span class="board-task--description">{{ item.description }}</span>
+        <button class="board-task--remove" @click="() => removeTask(item._id)">
+          X
+        </button>
       </li>
     </ul>
+    <router-link to="/board/edit" class="board-button--add-column"
+      >+</router-link
+    >
   </div>
 </template>
 
-<script setup>
-const columns = [
-  {
-    title: "Column 1",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 2",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 3",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 4",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-  {
-    title: "Column 5",
-    items: [
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-      {
-        title: "Task 1",
-        description: "Set the time to 10:00",
-      },
-    ],
-  },
-];
+<script setup lang="ts">
+import { onMounted } from "vue";
+
+import { useBoardStore } from "@/stores/BoardStore";
+import router from "@/router";
+
+const { columns, fetchAndFormatTasks, removeTask } = useBoardStore();
+
+const editTask = (_id: string) => {
+  router.push(`/board/edit?id=${_id}`);
+};
+
+onMounted(async () => {
+  columns.value = await fetchAndFormatTasks();
+});
 </script>
 
 <style lang="scss">
@@ -154,7 +63,11 @@ const columns = [
   width: 400px;
   overflow: auto;
 
-  border-right: 1px solid black;
+  border-right: 2px solid $primary-scroll-bar-color;
+
+  &:last-of-type {
+    border-right: none;
+  }
 
   &::-webkit-scrollbar-track {
     background-color: transparent;
@@ -172,6 +85,7 @@ const columns = [
 }
 
 .board-task {
+  position: relative;
   list-style-type: none;
   height: 100px;
   width: calc(100% - 20px);
@@ -189,7 +103,30 @@ const columns = [
     font-weight: bold;
   }
 
-  &--description {
+  &--remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    color: rgb(0, 255, 179);
+    mix-blend-mode: difference;
+    font-family: $primary-font;
+    font-size: 1.2rem;
+    background: transparent;
+    border: none;
   }
+}
+
+.board-button--add-column {
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: transparent;
+  border: 2px solid $primary-scroll-bar-color;
+  border-radius: 10px;
+  color: $primary-scroll-bar-color;
+  text-decoration: none;
 }
 </style>
