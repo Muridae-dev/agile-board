@@ -30,8 +30,8 @@ export const useBoardStore = defineStore("board", () => {
     });
   };
 
-  const editTask = (_id: string, body: any) => {
-    fetch("http://localhost:3000/api/taskList/" + _id, {
+  const editTask = async (_id: string, body: any) => {
+    await fetch("http://localhost:3000/api/taskList/" + _id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
